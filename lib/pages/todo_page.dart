@@ -19,31 +19,20 @@ class _TodoPageState extends State<TodoPage> {
 
   void handleAddTodo(BuildContext context) {
     if (todoTitleController.text == "") {
-      () => noTitleDialog(context);
+      noTitleDialog(context);
       return;
     }
 
     String title = todoTitleController.text;
     Todo newTodo = Todo(id: counter, title: title, priority: priority);
     todos.add(newTodo);
-  
+
     setState(() {
       todoTitleController.clear();
       priority = TodoPriority.medium;
     });
 
     Navigator.of(context).pop();
-  }
-
-  String priorityEnumToString(TodoPriority priority) {
-    switch (priority) {
-      case TodoPriority.low:
-        return "Low";
-      case TodoPriority.medium:
-        return "Medium";
-      case TodoPriority.high:
-        return "High";
-    }
   }
 
   @override
@@ -139,9 +128,16 @@ class _TodoPageState extends State<TodoPage> {
           itemBuilder: (context, index) => Padding(
             padding: EdgeInsets.all(4),
             child: ListTile(
-              tileColor: index.isEven ? Colors.lightGreen[300] : Colors.grey[200],
+              tileColor: index.isEven ? Colors.lightGreen[200] : Colors.grey[200],
               title: TodosText(todos[index].title),
-              subtitle: Text(priorityEnumToString(priority)),
+              subtitle: Text("Priority: ${todos[index].priorityToString()}"),
+              trailing: Checkbox(
+                value: todos[index].completed,
+                onChanged: (value) {
+                  setState(() {
+                    todos[index].completed = value!;
+                  });
+              }),
             ),
           ),
         ),
