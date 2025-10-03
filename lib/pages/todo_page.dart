@@ -20,7 +20,7 @@ class _TodoPageState extends State<TodoPage> {
   TodoPriority priority = TodoPriority.medium;
   static List<Todo> todos = [];
 
-  void addTodo() {
+  void onShowBottomModal() {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext builder) {
@@ -114,12 +114,6 @@ class _TodoPageState extends State<TodoPage> {
     Navigator.of(context).pop();
   }
 
-  // void handleChangePriority(TodoPriority value) {
-  //   setState(() {
-  //     priority = value;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +122,7 @@ class _TodoPageState extends State<TodoPage> {
         backgroundColor: Colors.lightGreen,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: AddTodoButton(addTodo: addTodo),
+      floatingActionButton: AddTodoButton(addTodo: onShowBottomModal),
       body: Center(
         child: todos.isEmpty ? NoTodosScreen() :
         ListView.builder(
