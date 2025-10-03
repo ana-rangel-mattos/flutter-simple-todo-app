@@ -10,8 +10,6 @@ class Todo {
     required this.priority,
     this.completed = false,
   });
-
-  static List<Todo> todos = [];
 }
 
 enum TodoPriority {
