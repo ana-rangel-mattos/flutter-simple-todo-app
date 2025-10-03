@@ -42,6 +42,7 @@ class _TodoPageState extends State<TodoPage> {
         title: Text("My ToDos"),
         backgroundColor: Colors.lightGreen,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightGreen,
         onPressed: () {
