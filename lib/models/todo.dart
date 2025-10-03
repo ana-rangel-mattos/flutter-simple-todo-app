@@ -12,14 +12,7 @@ class Todo {
   });
 
   String priorityToString() {
-    switch (priority) {
-      case TodoPriority.low:
-        return "Low";
-      case TodoPriority.medium:
-        return "Medium";
-      case TodoPriority.high:
-        return "High";
-    }
+    return priority.name[0].toUpperCase() + priority.name.substring(1).toLowerCase();
   }
 }
 

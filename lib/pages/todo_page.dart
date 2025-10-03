@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:simple_todo_app/components/todos_text.dart';
 import 'package:simple_todo_app/models/todo.dart';
 import 'package:simple_todo_app/screens/no_todos_screen.dart';
+import 'package:simple_todo_app/components/todo_item.dart';
+import 'package:simple_todo_app/components/todo_radio.dart';
+import 'package:simple_todo_app/components/add_todo_button.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -16,6 +19,82 @@ class _TodoPageState extends State<TodoPage> {
   int counter = 1;
   TodoPriority priority = TodoPriority.medium;
   static List<Todo> todos = [];
+
+  void addTodo() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext builder) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Container(
+                color: Colors.lightGreen[200],
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 20),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: todoTitleController,
+                        decoration: InputDecoration(
+                          label: TodosText("To do Title"),
+                          hint: Text("To do description goes here..."),
+                          icon: Icon(Icons.text_snippet_outlined),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: TodosText("Todo Priority"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 30),
+                        child: Row(
+                          children: [
+                            TodoRadio(
+                              priority,
+                              radioValue: TodoPriority.low,
+                              priorityName: "Low",
+                              onChanged: (TodoPriority value) {
+                                setState(() {
+                                  priority = value;
+                                });
+                              },
+                            ),
+                            TodoRadio(
+                              priority,
+                              radioValue: TodoPriority.medium,
+                              priorityName: "Medium",
+                              onChanged: (TodoPriority value) {
+                                setState(() {
+                                  priority = value;
+                                });
+                              },
+                            ),
+                            TodoRadio(
+                              priority,
+                              radioValue: TodoPriority.high,
+                              priorityName: "High",
+                              onChanged: (TodoPriority value) {
+                                setState(() {
+                                  priority = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => handleAddTodo(context),
+                        child: TodosText("Add new To do"),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+        );
+      },
+      isScrollControlled: true,
+    );
+  }
 
   void handleAddTodo(BuildContext context) {
     if (todoTitleController.text == "") {
@@ -35,6 +114,12 @@ class _TodoPageState extends State<TodoPage> {
     Navigator.of(context).pop();
   }
 
+  // void handleChangePriority(TodoPriority value) {
+  //   setState(() {
+  //     priority = value;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,104 +128,24 @@ class _TodoPageState extends State<TodoPage> {
         backgroundColor: Colors.lightGreen,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightGreen,
-        onPressed: () {
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (BuildContext builder) {
-              return StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return Container(
-                    color: Colors.lightGreen[200],
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          TextField(
-                            controller: todoTitleController,
-                            decoration: InputDecoration(
-                              label: TodosText("To do Title"),
-                              hint: Text("To do description goes here..."),
-                              icon: Icon(Icons.text_snippet_outlined),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child: TodosText("Todo Priority"),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10, bottom: 30),
-                            child: Row(
-                              children: [
-                                Radio<TodoPriority>(
-                                  value: TodoPriority.low,
-                                  groupValue: priority,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      priority = value!;
-                                    });
-                                  },
-                                ),
-                                TodosText("Low"),
-                                Radio<TodoPriority>(
-                                  value: TodoPriority.medium,
-                                  groupValue: priority,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      priority = value!;
-                                    });
-                                  },
-                                ),
-                                TodosText("Medium"),
-                                Radio<TodoPriority>(
-                                  value: TodoPriority.high,
-                                  groupValue: priority,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      priority = value!;
-                                    });
-                                  },
-                                ),
-                                TodosText("High"),
-                              ],
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => handleAddTodo(context),
-                            child: TodosText("Add new To do"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-              );
-            },
-          );
-        },
-        shape: CircleBorder(),
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: AddTodoButton(addTodo: addTodo),
       body: Center(
         child: todos.isEmpty ? NoTodosScreen() :
         ListView.builder(
           itemCount: todos.length,
-          itemBuilder: (context, index) => Padding(
-            padding: EdgeInsets.all(4),
-            child: ListTile(
-              tileColor: index.isEven ? Colors.lightGreen[200] : Colors.grey[200],
-              title: TodosText(todos[index].title),
-              subtitle: Text("Priority: ${todos[index].priorityToString()}"),
-              trailing: Checkbox(
-                value: todos[index].completed,
-                onChanged: (value) {
-                  setState(() {
-                    todos[index].completed = value!;
-                  });
-              }),
-            ),
-          ),
+          itemBuilder: (context, index) {
+            Todo currentTodo = todos[index];
+
+            return TodoItem(
+              index,
+              todo: currentTodo,
+              onChangedChecked: (bool value) {
+                setState(() {
+                  currentTodo.completed = value;
+                });
+              },
+            );
+          },
         ),
       ),
     );
